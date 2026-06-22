@@ -1,0 +1,370 @@
+/* 叙事编辑器样式 */
+.narrative-editor {
+    padding: var(--spacing-md);
+}
+
+/* 章节列表 */
+.chapter-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.chapter-item {
+    padding: var(--spacing-md);
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.chapter-item:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.chapter-item.active {
+    border-color: var(--primary-color);
+    background: rgba(201, 162, 39, 0.05);
+}
+
+.chapter-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-sm);
+}
+
+.chapter-order {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.chapter-title {
+    flex: 1;
+    margin-left: var(--spacing-sm);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.chapter-actions {
+    display: flex;
+    gap: var(--spacing-xs);
+}
+
+.chapter-description {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.chapter-events {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    margin-top: var(--spacing-sm);
+}
+
+.chapter-event-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.chapter-event-tag::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--primary-color);
+    border-radius: 50%;
+}
+
+/* 叙事流视图 */
+.narrative-flow {
+    position: relative;
+    padding: var(--spacing-md) 0;
+}
+
+.narrative-flow::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--border-color);
+    transform: translateX(-50%);
+}
+
+.narrative-node {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-lg);
+}
+
+.narrative-node:nth-child(odd) {
+    flex-direction: row;
+}
+
+.narrative-node:nth-child(even) {
+    flex-direction: row-reverse;
+}
+
+.narrative-node-content {
+    width: 45%;
+    padding: var(--spacing-md);
+    background: white;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+}
+
+.narrative-node:nth-child(odd) .narrative-node-content {
+    margin-right: auto;
+    text-align: right;
+}
+
+.narrative-node:nth-child(even) .narrative-node-content {
+    margin-left: auto;
+    text-align: left;
+}
+
+.narrative-node-marker {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    border: 4px solid white;
+    box-shadow: var(--shadow-sm);
+    z-index: 1;
+}
+
+.narrative-node-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.narrative-node-description {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.narrative-node-meta {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-sm);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* 叙事详情面板 */
+.narrative-detail {
+    padding: var(--spacing-lg);
+}
+
+.narrative-detail-header {
+    text-align: center;
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: var(--spacing-lg);
+}
+
+.narrative-detail-title {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.narrative-detail-subtitle {
+    color: var(--text-secondary);
+}
+
+.narrative-detail-section {
+    margin-bottom: var(--spacing-lg);
+}
+
+.narrative-detail-section h4 {
+    font-size: 1rem;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 2px solid var(--primary-color);
+    display: inline-block;
+}
+
+.narrative-detail-text {
+    font-size: 0.95rem;
+    line-height: 1.8;
+    color: var(--text-secondary);
+}
+
+/* 角色列表 */
+.role-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+}
+
+.role-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+}
+
+.role-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+}
+
+.role-name {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.role-type {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+/* 空状态 */
+.empty-state {
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--text-muted);
+}
+
+.empty-state svg {
+    width: 64px;
+    height: 64px;
+    margin-bottom: var(--spacing-md);
+    opacity: 0.5;
+}
+
+.empty-state h4 {
+    font-size: 1rem;
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-secondary);
+}
+
+.empty-state p {
+    font-size: 0.85rem;
+}
+
+/* 叙事工具栏 */
+.narrative-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.narrative-toolbar-left {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.narrative-toolbar-right {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+/* 拖拽排序 */
+.chapter-item.dragging {
+    opacity: 0.5;
+    border-style: dashed;
+}
+
+.chapter-item.drag-over {
+    border-color: var(--primary-color);
+    background: rgba(201, 162, 39, 0.1);
+}
+
+/* 叙事统计 */
+.narrative-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary-dark);
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* 响应式适配 */
+@media (max-width: 768px) {
+    .narrative-node:nth-child(odd),
+    .narrative-node:nth-child(even) {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .narrative-node-content {
+        width: 100%;
+        text-align: left !important;
+    }
+
+    .narrative-flow::before {
+        left: 20px;
+    }
+
+    .narrative-node-marker {
+        left: 20px;
+    }
+
+    .narrative-stats {
+        grid-template-columns: 1fr;
+    }
+}

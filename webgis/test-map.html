@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地图测试</title>
+    <link rel="stylesheet" href="lib/leaflet.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        #map {
+            width: 100%;
+            height: 500px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+        }
+        .info {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>地图测试页面</h1>
+    <div class="info">
+        <p>如果下面的地图能正常显示，说明Leaflet库已正确加载。</p>
+    </div>
+    <div id="map"></div>
+
+    <script src="lib/leaflet.js"></script>
+    <script>
+        // 检查Leaflet是否加载
+        if (typeof L === 'undefined') {
+            document.body.innerHTML += '<div style="color: red; padding: 20px;">错误：Leaflet库未加载！</div>';
+        } else {
+            // 初始化地图
+            const map = L.map('map').setView([35, 75], 4);
+
+            // 添加OpenStreetMap底图
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // 添加测试标记
+            L.marker([34.26, 108.94]).addTo(map)
+                .bindPopup('<b>长安</b><br>丝绸之路起点')
+                .openPopup();
+
+            L.marker([37.22, 67.19]).addTo(map)
+                .bindPopup('<b>大月氏</b><br>张骞出使目标');
+
+            console.log('地图加载成功！');
+        }
+    </script>
+</body>
+</html>

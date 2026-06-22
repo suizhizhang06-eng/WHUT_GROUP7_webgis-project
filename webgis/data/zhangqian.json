@@ -1,0 +1,457 @@
+{
+  "narrative": {
+    "id": "zhangqian-silk-road",
+    "title": "张骞出使西域",
+    "subtitle": "丝绸之路的开拓者",
+    "description": "公元前138年，汉武帝派遣张骞出使西域，意图联合大月氏夹击匈奴。张骞历经13年艰辛，虽未完成最初使命，却开辟了举世闻名的丝绸之路，促进了东西方文明的交流与融合。",
+    "timeRange": {
+      "start": "前138年",
+      "end": "前60年"
+    }
+  },
+  "roles": [
+    {
+      "id": "zhangqian",
+      "name": "张骞",
+      "type": "person",
+      "description": "西汉著名外交家、探险家，丝绸之路的开拓者",
+      "attributes": {
+        "era": "西汉",
+        "title": "博望侯",
+        "birthYear": "前164年",
+        "deathYear": "前114年"
+      }
+    },
+    {
+      "id": "han-wudi",
+      "name": "汉武帝",
+      "type": "person",
+      "description": "西汉第七位皇帝，雄才大略，开拓疆土",
+      "attributes": {
+        "era": "西汉",
+        "title": "皇帝",
+        "birthYear": "前156年",
+        "deathYear": "前87年"
+      }
+    },
+    {
+      "id": "xiongnu",
+      "name": "匈奴",
+      "type": "army",
+      "description": "北方游牧民族，与汉朝长期对峙",
+      "attributes": {
+        "era": "秦汉时期",
+        "type": "游牧民族"
+      }
+    },
+    {
+      "id": "dayuezhi",
+      "name": "大月氏",
+      "type": "country",
+      "description": "西域古国，原居河西走廊，后被匈奴西迁至阿姆河流域",
+      "attributes": {
+        "era": "秦汉时期",
+        "type": "西域古国"
+      }
+    },
+    {
+      "id": "wusun",
+      "name": "乌孙",
+      "type": "country",
+      "description": "西域古国，位于伊犁河流域",
+      "attributes": {
+        "era": "秦汉时期",
+        "type": "西域古国"
+      }
+    }
+  ],
+  "events": [
+    {
+      "id": "event-01",
+      "name": "受命出使",
+      "time": {
+        "start": "前138年",
+        "end": "",
+        "sortKey": -138
+      },
+      "location": {
+        "lat": 34.2632,
+        "lng": 108.9391,
+        "name": "长安"
+      },
+      "type": "departure",
+      "description": "汉武帝为联合大月氏夹击匈奴，招募使者。张骞以郎官身份应募，率领百余人从长安出发。",
+      "roles": ["zhangqian", "han-wudi"],
+      "relatedEvents": ["event-02"],
+      "routeId": "route-01"
+    },
+    {
+      "id": "event-02",
+      "name": "被匈奴扣押",
+      "time": {
+        "start": "前138年",
+        "end": "前129年",
+        "sortKey": -137
+      },
+      "location": {
+        "lat": 40.8421,
+        "lng": 94.6619,
+        "name": "河西走廊"
+      },
+      "type": "captivity",
+      "description": "张骞一行西行至河西走廊时被匈奴俘获。匈奴单于为笼络张骞，将其扣留十年，并为他娶妻生子。但张骞始终持汉节不屈。",
+      "roles": ["zhangqian", "xiongnu"],
+      "relatedEvents": ["event-01", "event-03"],
+      "routeId": "route-01"
+    },
+    {
+      "id": "event-03",
+      "name": "逃脱西行",
+      "time": {
+        "start": "前129年",
+        "end": "",
+        "sortKey": -129
+      },
+      "location": {
+        "lat": 40.1421,
+        "lng": 94.6619,
+        "name": "匈奴领地"
+      },
+      "type": "departure",
+      "description": "张骞趁匈奴放松监视，带领随从堂邑父逃离匈奴，继续西行寻找大月氏。",
+      "roles": ["zhangqian"],
+      "relatedEvents": ["event-02", "event-04"],
+      "routeId": "route-01"
+    },
+    {
+      "id": "event-04",
+      "name": "到达大宛",
+      "time": {
+        "start": "前129年",
+        "end": "",
+        "sortKey": -129
+      },
+      "location": {
+        "lat": 40.5286,
+        "lng": 69.6347,
+        "name": "大宛（费尔干纳盆地）"
+      },
+      "type": "arrival",
+      "description": "张骞一行历经艰辛到达大宛国（今乌兹别克斯坦费尔干纳盆地）。大宛国王对汉朝的富饶很感兴趣，派人护送张骞前往康居。",
+      "roles": ["zhangqian"],
+      "relatedEvents": ["event-03", "event-05"],
+      "routeId": "route-01"
+    },
+    {
+      "id": "event-05",
+      "name": "抵达大月氏",
+      "time": {
+        "start": "前128年",
+        "end": "",
+        "sortKey": -128
+      },
+      "location": {
+        "lat": 37.2241,
+        "lng": 67.1894,
+        "name": "大月氏（阿姆河流域）"
+      },
+      "type": "diplomacy",
+      "description": "张骞终于找到大月氏。但大月氏已在新土地上安居乐业，无意东归复仇。张骞停留一年多，考察当地风土人情。",
+      "roles": ["zhangqian", "dayuezhi"],
+      "relatedEvents": ["event-04", "event-06"],
+      "routeId": "route-01"
+    },
+    {
+      "id": "event-06",
+      "name": "踏上归途",
+      "time": {
+        "start": "前127年",
+        "end": "",
+        "sortKey": -127
+      },
+      "location": {
+        "lat": 37.2241,
+        "lng": 67.1894,
+        "name": "大月氏"
+      },
+      "type": "departure",
+      "description": "外交使命虽未达成，但张骞决定返回长安。为避开匈奴，选择经青海羌人地区东归。",
+      "roles": ["zhangqian"],
+      "relatedEvents": ["event-05", "event-07"],
+      "routeId": "route-02"
+    },
+    {
+      "id": "event-07",
+      "name": "再次被俘",
+      "time": {
+        "start": "前127年",
+        "end": "前126年",
+        "sortKey": -126.5
+      },
+      "location": {
+        "lat": 36.6170,
+        "lng": 101.7782,
+        "name": "青海羌地"
+      },
+      "type": "captivity",
+      "description": "张骞东归途中再次被匈奴扣押，又被留住一年多。",
+      "roles": ["zhangqian", "xiongnu"],
+      "relatedEvents": ["event-06", "event-08"],
+      "routeId": "route-02"
+    },
+    {
+      "id": "event-08",
+      "name": "重返长安",
+      "time": {
+        "start": "前126年",
+        "end": "",
+        "sortKey": -126
+      },
+      "location": {
+        "lat": 34.2632,
+        "lng": 108.9391,
+        "name": "长安"
+      },
+      "type": "arrival",
+      "description": "张骞趁匈奴内乱，再次逃脱，带着妻子和堂邑父返回长安。出发时百余人，归来时仅剩二人。历时13年，张骞终于完成使命。",
+      "roles": ["zhangqian", "han-wudi"],
+      "relatedEvents": ["event-07", "event-09"],
+      "routeId": "route-02"
+    },
+    {
+      "id": "event-09",
+      "name": "封博望侯",
+      "time": {
+        "start": "前126年",
+        "end": "",
+        "sortKey": -126
+      },
+      "location": {
+        "lat": 34.2632,
+        "lng": 108.9391,
+        "name": "长安"
+      },
+      "type": "other",
+      "description": "汉武帝封张骞为太中大夫，后封博望侯。张骞向汉武帝详细汇报了西域各国的情况。",
+      "roles": ["zhangqian", "han-wudi"],
+      "relatedEvents": ["event-08"],
+      "routeId": null
+    },
+    {
+      "id": "event-10",
+      "name": "第二次出使",
+      "time": {
+        "start": "前119年",
+        "end": "",
+        "sortKey": -119
+      },
+      "location": {
+        "lat": 34.2632,
+        "lng": 108.9391,
+        "name": "长安"
+      },
+      "type": "diplomacy",
+      "description": "张骞率三百人使团，携带大量牛羊金帛，第二次出使西域。此次主要目的是联络乌孙，夹击匈奴。",
+      "roles": ["zhangqian", "han-wudi", "wusun"],
+      "relatedEvents": ["event-09", "event-11"],
+      "routeId": "route-03"
+    },
+    {
+      "id": "event-11",
+      "name": "到达乌孙",
+      "time": {
+        "start": "前118年",
+        "end": "",
+        "sortKey": -118
+      },
+      "location": {
+        "lat": 43.2500,
+        "lng": 81.3333,
+        "name": "乌孙（伊犁河谷）"
+      },
+      "type": "diplomacy",
+      "description": "张骞到达乌孙，虽未达成军事联盟，但乌孙派使者随张骞回访长安，开启了汉乌友好往来。",
+      "roles": ["zhangqian", "wusun"],
+      "relatedEvents": ["event-10", "event-12"],
+      "routeId": "route-03"
+    },
+    {
+      "id": "event-12",
+      "name": "遍访西域",
+      "time": {
+        "start": "前118年",
+        "end": "前115年",
+        "sortKey": -116
+      },
+      "location": {
+        "lat": 39.4739,
+        "lng": 75.9797,
+        "name": "西域诸国"
+      },
+      "type": "diplomacy",
+      "description": "张骞派遣副使访问大宛、康居、大月氏、大夏等国，扩大了汉朝在西域的影响力。",
+      "roles": ["zhangqian"],
+      "relatedEvents": ["event-11", "event-13"],
+      "routeId": "route-03"
+    },
+    {
+      "id": "event-13",
+      "name": "病逝长安",
+      "time": {
+        "start": "前114年",
+        "end": "",
+        "sortKey": -114
+      },
+      "location": {
+        "lat": 34.2632,
+        "lng": 108.9391,
+        "name": "长安"
+      },
+      "type": "other",
+      "description": "张骞病逝于长安，被追封为博望侯。他开辟的丝绸之路成为连接东西方文明的重要通道。",
+      "roles": ["zhangqian"],
+      "relatedEvents": ["event-12"],
+      "routeId": null
+    }
+  ],
+  "routes": [
+    {
+      "id": "route-01",
+      "name": "第一次出使路线（去程）",
+      "type": "diplomaticRoute",
+      "color": "#3498db",
+      "weight": 4,
+      "animation": true,
+      "points": [
+        { "lat": 34.2632, "lng": 108.9391, "name": "长安" },
+        { "lat": 34.7500, "lng": 106.5000, "name": "宝鸡" },
+        { "lat": 35.5800, "lng": 104.3500, "name": "天水" },
+        { "lat": 36.0600, "lng": 103.8300, "name": "兰州" },
+        { "lat": 37.9300, "lng": 102.6400, "name": "武威" },
+        { "lat": 38.9300, "lng": 100.4500, "name": "张掖" },
+        { "lat": 39.7300, "lng": 98.5100, "name": "酒泉" },
+        { "lat": 40.1421, "lng": 94.6619, "name": "敦煌" },
+        { "lat": 40.5286, "lng": 69.6347, "name": "大宛" },
+        { "lat": 39.7500, "lng": 66.9600, "name": "康居" },
+        { "lat": 37.2241, "lng": 67.1894, "name": "大月氏" }
+      ],
+      "events": ["event-01", "event-02", "event-03", "event-04", "event-05"]
+    },
+    {
+      "id": "route-02",
+      "name": "第一次出使路线（归程）",
+      "type": "diplomaticRoute",
+      "color": "#2ecc71",
+      "weight": 4,
+      "animation": true,
+      "points": [
+        { "lat": 37.2241, "lng": 67.1894, "name": "大月氏" },
+        { "lat": 37.5000, "lng": 69.0000, "name": "吐火罗" },
+        { "lat": 37.0000, "lng": 72.0000, "name": "葱岭" },
+        { "lat": 36.6170, "lng": 101.7782, "name": "青海羌地" },
+        { "lat": 35.5800, "lng": 104.3500, "name": "天水" },
+        { "lat": 34.2632, "lng": 108.9391, "name": "长安" }
+      ],
+      "events": ["event-06", "event-07", "event-08"]
+    },
+    {
+      "id": "route-03",
+      "name": "第二次出使路线",
+      "type": "diplomaticRoute",
+      "color": "#c9a227",
+      "weight": 4,
+      "animation": true,
+      "points": [
+        { "lat": 34.2632, "lng": 108.9391, "name": "长安" },
+        { "lat": 35.5800, "lng": 104.3500, "name": "天水" },
+        { "lat": 36.0600, "lng": 103.8300, "name": "兰州" },
+        { "lat": 37.9300, "lng": 102.6400, "name": "武威" },
+        { "lat": 38.9300, "lng": 100.4500, "name": "张掖" },
+        { "lat": 39.7300, "lng": 98.5100, "name": "酒泉" },
+        { "lat": 40.1421, "lng": 94.6619, "name": "敦煌" },
+        { "lat": 41.5000, "lng": 86.0000, "name": "楼兰" },
+        { "lat": 42.5000, "lng": 83.0000, "name": "龟兹" },
+        { "lat": 43.2500, "lng": 81.3333, "name": "乌孙" }
+      ],
+      "events": ["event-10", "event-11", "event-12"]
+    }
+  ],
+  "chapters": [
+    {
+      "id": "chapter-01",
+      "narrativeId": "zhangqian-silk-road",
+      "order": 1,
+      "title": "受命出使",
+      "description": "汉武帝为联合大月氏夹击匈奴，张骞应募出使西域，开启了这段传奇旅程。",
+      "events": ["event-01"],
+      "roles": ["zhangqian", "han-wudi"],
+      "locations": ["长安"]
+    },
+    {
+      "id": "chapter-02",
+      "narrativeId": "zhangqian-silk-road",
+      "order": 2,
+      "title": "十年匈奴",
+      "description": "张骞被匈奴扣押十年，但始终持节不屈，展现了坚贞的民族气节。",
+      "events": ["event-02", "event-03"],
+      "roles": ["zhangqian", "xiongnu"],
+      "locations": ["河西走廊"]
+    },
+    {
+      "id": "chapter-03",
+      "narrativeId": "zhangqian-silk-road",
+      "order": 3,
+      "title": "西域历险",
+      "description": "张骞逃脱匈奴，历经大宛、康居，终于到达大月氏，完成外交使命。",
+      "events": ["event-04", "event-05"],
+      "roles": ["zhangqian", "dayuezhi"],
+      "locations": ["大宛", "大月氏"]
+    },
+    {
+      "id": "chapter-04",
+      "narrativeId": "zhangqian-silk-road",
+      "order": 4,
+      "title": "万里归途",
+      "description": "张骞踏上归途，虽再次被俘，但最终重返长安，完成了历史性旅程。",
+      "events": ["event-06", "event-07", "event-08"],
+      "roles": ["zhangqian"],
+      "locations": ["长安"]
+    },
+    {
+      "id": "chapter-05",
+      "narrativeId": "zhangqian-silk-road",
+      "order": 5,
+      "title": "再通西域",
+      "description": "张骞第二次出使西域，联络乌孙，扩大汉朝影响力，丝绸之路正式开通。",
+      "events": ["event-09", "event-10", "event-11", "event-12"],
+      "roles": ["zhangqian", "han-wudi", "wusun"],
+      "locations": ["乌孙", "西域诸国"]
+    }
+  ],
+  "locations": [
+    {
+      "id": "loc-changan",
+      "name": "长安",
+      "coordinates": { "lat": 34.2632, "lng": 108.9391 },
+      "type": "capital",
+      "historicalName": "长安",
+      "description": "西汉都城，丝绸之路的起点"
+    },
+    {
+      "id": "loc-dayuezhi",
+      "name": "大月氏",
+      "coordinates": { "lat": 37.2241, "lng": 67.1894 },
+      "type": "city",
+      "historicalName": "大月氏",
+      "description": "张骞出使的目标国家"
+    },
+    {
+      "id": "loc-wusun",
+      "name": "乌孙",
+      "coordinates": { "lat": 43.2500, "lng": 81.3333 },
+      "type": "city",
+      "historicalName": "乌孙",
+      "description": "西域重要国家"
+    }
+  ]
+}

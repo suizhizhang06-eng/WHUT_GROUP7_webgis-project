@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地理叙事驱动GIS系统 - 张骞出使西域</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="lib/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" onerror="this.onerror=null;this.href='lib/leaflet.css'" />
+
+    <!-- 自定义样式 -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/map.css">
+    <link rel="stylesheet" href="css/timeline.css">
+    <link rel="stylesheet" href="css/narrative.css">
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="logo">
+            <svg class="logo-icon" viewBox="0 0 24 24" width="32" height="32">
+                <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+                <path d="M12 2 L12 22 M2 12 L22 12" stroke="currentColor" stroke-width="1" opacity="0.3"/>
+                <circle cx="8" cy="8" r="2" fill="currentColor"/>
+                <circle cx="16" cy="12" r="2" fill="currentColor"/>
+                <circle cx="10" cy="16" r="2" fill="currentColor"/>
+                <path d="M8 8 L16 12 L10 16" stroke="currentColor" stroke-width="1.5" fill="none"/>
+            </svg>
+            <h1>地理叙事驱动GIS系统</h1>
+        </div>
+        <nav class="nav-tabs">
+            <button class="nav-tab active" data-view="map">地图视图</button>
+            <button class="nav-tab" data-view="timeline">时间线</button>
+            <button class="nav-tab" data-view="narrative">叙事编辑</button>
+            <button class="nav-tab" data-view="analysis">空间分析</button>
+        </nav>
+        <div class="header-actions">
+            <button id="btn-load-case" class="btn btn-primary">加载案例</button>
+            <button id="btn-export" class="btn btn-secondary">导出</button>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="main-container">
+        <!-- 左侧面板 - 仅显示章节 -->
+        <aside class="sidebar sidebar-left" id="sidebar-left">
+            <div class="panel chapter-panel">
+                <div class="panel-header">
+                    <h3>叙事章节</h3>
+                </div>
+                <div class="panel-body chapter-list-container">
+                    <div id="chapter-list" class="chapter-list">
+                        <!-- 章节列表将由JS动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 中心 - 地图区域 -->
+        <section class="map-container" id="map-container">
+            <div id="map" class="map"></div>
+
+            <!-- 时间滑块 -->
+            <div class="time-slider-container" id="time-slider-container">
+                <div class="time-slider-header">
+                    <span class="time-label" id="time-current">前138年</span>
+                    <span class="time-range">前138年 - 前60年</span>
+                </div>
+                <input type="range" id="time-slider" class="time-slider" min="0" max="100" value="0">
+                <div class="time-controls">
+                    <button id="btn-play" class="btn-icon" title="播放动画">
+                        <svg viewBox="0 0 24 24" width="20" height="20">
+                            <polygon points="5,3 19,12 5,21" fill="currentColor"/>
+                        </svg>
+                    </button>
+                    <button id="btn-pause" class="btn-icon" title="暂停" style="display:none;">
+                        <svg viewBox="0 0 24 24" width="20" height="20">
+                            <rect x="6" y="4" width="4" height="16" fill="currentColor"/>
+                            <rect x="14" y="4" width="4" height="16" fill="currentColor"/>
+                        </svg>
+                    </button>
+                    <button id="btn-reset" class="btn-icon" title="重置">
+                        <svg viewBox="0 0 24 24" width="20" height="20">
+                            <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z" fill="currentColor"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 地图工具栏 -->
+            <div class="map-toolbar" id="map-toolbar">
+                <button class="btn-tool active" data-tool="select" title="选择">
+                    <svg viewBox="0 0 24 24" width="18" height="18">
+                        <path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z" fill="currentColor"/>
+                    </svg>
+                </button>
+                <button class="btn-tool" data-tool="point" title="添加事件点">
+                    <svg viewBox="0 0 24 24" width="18" height="18">
+                        <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/>
+                        <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                    </svg>
+                </button>
+                <button class="btn-tool" data-tool="line" title="绘制路线">
+                    <svg viewBox="0 0 24 24" width="18" height="18">
+                        <path d="M4 20 L10 10 L14 14 L20 4" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <circle cx="4" cy="20" r="2" fill="currentColor"/>
+                        <circle cx="20" cy="4" r="2" fill="currentColor"/>
+                    </svg>
+                </button>
+                <button class="btn-tool" data-tool="buffer" title="缓冲区分析">
+                    <svg viewBox="0 0 24 24" width="18" height="18">
+                        <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/>
+                        <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="4"/>
+                    </svg>
+                </button>
+                <button class="btn-tool" id="btn-clear-buffers" title="清除缓冲区">
+                    <svg viewBox="0 0 24 24" width="18" height="18">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
+                    </svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- 右侧面板 - 详情/属性 -->
+        <aside class="sidebar sidebar-right" id="sidebar-right">
+            <div class="panel" id="detail-panel">
+                <div class="panel-header">
+                    <h3 id="detail-title">详细信息</h3>
+                    <button class="btn-icon" id="btn-close-detail">
+                        <svg viewBox="0 0 24 24" width="16" height="16">
+                            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="panel-body">
+                    <div id="detail-content" class="detail-content">
+                        <p class="placeholder-text">点击地图元素查看详情</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel" id="query-panel">
+                <div class="panel-header">
+                    <h3>叙事查询</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="query-form">
+                        <div class="form-group">
+                            <label>查询类型</label>
+                            <select id="query-type" class="form-control">
+                                <option value="event">按事件查询</option>
+                                <option value="role">按角色查询</option>
+                                <option value="time">按时间查询</option>
+                                <option value="location">按地点查询</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>关键词</label>
+                            <input type="text" id="query-keyword" class="form-control" placeholder="输入关键词...">
+                        </div>
+                        <button id="btn-query" class="btn btn-primary btn-block">查询</button>
+                    </div>
+
+                    <div class="analysis-section">
+                        <h4>空间分析</h4>
+                        <button id="btn-spatiotemporal" class="btn btn-primary btn-block">时空序列分析</button>
+                        <button id="btn-influence" class="btn btn-primary btn-block">影响范围分析</button>
+                        <button id="btn-overlay" class="btn btn-primary btn-block">叠加分析</button>
+                    </div>
+
+                    <div id="query-results" class="query-results">
+                        <!-- 查询结果将在这里显示 -->
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- 模态框 - 案例选择 -->
+    <div class="modal" id="modal-case" style="display:none;">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>选择叙事案例</h3>
+                <button class="btn-icon modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="case-list">
+                    <div class="case-card" data-case="zhangqian">
+                        <div class="case-icon">
+                            <svg viewBox="0 0 64 64" width="64" height="64">
+                                <circle cx="32" cy="32" r="28" fill="none" stroke="#c9a227" stroke-width="2"/>
+                                <path d="M20 32 Q32 20 44 32 Q32 44 20 32" fill="none" stroke="#c9a227" stroke-width="2"/>
+                                <circle cx="20" cy="32" r="4" fill="#c9a227"/>
+                                <circle cx="44" cy="32" r="4" fill="#c9a227"/>
+                                <path d="M20 32 L44 32" stroke="#c9a227" stroke-width="1.5" stroke-dasharray="4"/>
+                            </svg>
+                        </div>
+                        <h4>张骞出使西域</h4>
+                        <p>丝绸之路的开拓者，横跨欧亚的外交壮举</p>
+                        <span class="case-time">前138年 - 前60年</span>
+                    </div>
+                    <div class="case-card" data-case="battle">
+                        <div class="case-icon">
+                            <svg viewBox="0 0 64 64" width="64" height="64">
+                                <circle cx="32" cy="32" r="28" fill="none" stroke="#e74c3c" stroke-width="2"/>
+                                <path d="M24 24 L40 40 M40 24 L24 40" stroke="#e74c3c" stroke-width="3"/>
+                                <circle cx="32" cy="32" r="8" fill="none" stroke="#e74c3c" stroke-width="2"/>
+                            </svg>
+                        </div>
+                        <h4>街亭之战</h4>
+                        <p>三国时期关键战役，诸葛亮北伐的转折点</p>
+                        <span class="case-time">228年</span>
+                    </div>
+                    <div class="case-card" data-case="poets">
+                        <div class="case-icon">
+                            <svg viewBox="0 0 64 64" width="64" height="64">
+                                <circle cx="32" cy="32" r="28" fill="none" stroke="#3498db" stroke-width="2"/>
+                                <path d="M20 44 Q32 20 44 44" fill="none" stroke="#3498db" stroke-width="2"/>
+                                <circle cx="20" cy="44" r="4" fill="#3498db"/>
+                                <circle cx="32" cy="20" r="4" fill="#3498db"/>
+                                <circle cx="44" cy="44" r="4" fill="#3498db"/>
+                            </svg>
+                        </div>
+                        <h4>诗人轨迹</h4>
+                        <p>李白、白居易的人生旅程与创作地图</p>
+                        <span class="case-time">唐代</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框 - 事件编辑 -->
+    <div class="modal" id="modal-event" style="display:none;">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="event-modal-title">编辑事件</h3>
+                <button class="btn-icon modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="event-form">
+                    <input type="hidden" id="event-id">
+                    <div class="form-group">
+                        <label>事件名称 *</label>
+                        <input type="text" id="event-name" class="form-control" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>开始时间</label>
+                            <input type="text" id="event-time-start" class="form-control" placeholder="如：前138年">
+                        </div>
+                        <div class="form-group">
+                            <label>结束时间</label>
+                            <input type="text" id="event-time-end" class="form-control" placeholder="如：前129年">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>地点名称</label>
+                        <input type="text" id="event-location-name" class="form-control" placeholder="如：长安">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>经度</label>
+                            <input type="number" id="event-lng" class="form-control" step="0.0001">
+                        </div>
+                        <div class="form-group">
+                            <label>纬度</label>
+                            <input type="number" id="event-lat" class="form-control" step="0.0001">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>事件类型</label>
+                        <select id="event-type" class="form-control">
+                            <option value="departure">出发</option>
+                            <option value="battle">战役</option>
+                            <option value="diplomacy">外交</option>
+                            <option value="captivity">扣押</option>
+                            <option value="arrival">到达</option>
+                            <option value="other">其他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>描述</label>
+                        <textarea id="event-description" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>关联角色</label>
+                        <div id="event-roles" class="checkbox-group">
+                            <!-- 角色复选框将动态生成 -->
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary modal-close">取消</button>
+                        <button type="submit" class="btn btn-primary">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="lib/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" onerror="this.onerror=null;this.src='lib/leaflet.js'"></script>
+
+    <!-- 应用脚本 -->
+    <script src="js/data-model.js"></script>
+    <script src="js/svg-symbols.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/timeline.js"></script>
+    <script src="js/narrative.js"></script>
+    <script src="js/spatial-analysis.js"></script>
+    <script src="js/case-zhangqian.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

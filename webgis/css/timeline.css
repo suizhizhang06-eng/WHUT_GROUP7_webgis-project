@@ -1,0 +1,249 @@
+/* 时间线样式 */
+.timeline-container {
+    padding: var(--spacing-lg);
+    background: var(--bg-primary);
+}
+
+.timeline {
+    position: relative;
+    padding: var(--spacing-lg) 0;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+    transform: translateX(-50%);
+    border-radius: 2px;
+}
+
+.timeline-item {
+    position: relative;
+    width: 50%;
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.timeline-item:nth-child(odd) {
+    left: 0;
+    padding-right: var(--spacing-xl);
+    text-align: right;
+}
+
+.timeline-item:nth-child(even) {
+    left: 50%;
+    padding-left: var(--spacing-xl);
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    width: 20px;
+    height: 20px;
+    background: var(--primary-color);
+    border: 4px solid white;
+    border-radius: 50%;
+    box-shadow: var(--shadow-sm);
+    z-index: 1;
+}
+
+.timeline-item:nth-child(odd)::before {
+    right: -10px;
+}
+
+.timeline-item:nth-child(even)::before {
+    left: -10px;
+}
+
+.timeline-item.active::before {
+    background: var(--accent-color);
+    transform: scale(1.3);
+}
+
+.timeline-content {
+    background: white;
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    transition: var(--transition-normal);
+}
+
+.timeline-content:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.timeline-date {
+    display: inline-block;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: var(--primary-color);
+    color: white;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+}
+
+.timeline-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.timeline-description {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.timeline-location {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin-top: var(--spacing-sm);
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.timeline-location svg {
+    color: var(--primary-color);
+}
+
+/* 连接线 */
+.timeline-connector {
+    position: absolute;
+    top: 30px;
+    width: 30px;
+    height: 2px;
+    background: var(--border-color);
+}
+
+.timeline-item:nth-child(odd) .timeline-connector {
+    right: -30px;
+}
+
+.timeline-item:nth-child(even) .timeline-connector {
+    left: -30px;
+}
+
+/* 时间线头部 */
+.timeline-header {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.timeline-header h2 {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.timeline-header p {
+    color: var(--text-secondary);
+}
+
+/* 筛选控件 */
+.timeline-filters {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: var(--spacing-xs) var(--spacing-md);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.filter-btn:hover {
+    border-color: var(--primary-color);
+}
+
+.filter-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* 事件类型标签 */
+.event-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-left: var(--spacing-sm);
+}
+
+.event-tag.departure { background: #d4edda; color: #155724; }
+.event-tag.battle { background: #f8d7da; color: #721c24; }
+.event-tag.diplomacy { background: #d1ecf1; color: #0c5460; }
+.event-tag.captivity { background: #e2d5f1; color: #563d7c; }
+.event-tag.arrival { background: #fff3cd; color: #856404; }
+
+/* 时间线动画 */
+.timeline-item {
+    opacity: 0;
+    transform: translateX(-20px);
+    animation: fadeInLeft 0.5s ease forwards;
+}
+
+.timeline-item:nth-child(even) {
+    transform: translateX(20px);
+    animation: fadeInRight 0.5s ease forwards;
+}
+
+@keyframes fadeInLeft {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeInRight {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* 响应式适配 */
+@media (max-width: 768px) {
+    .timeline::before {
+        left: 20px;
+    }
+
+    .timeline-item {
+        width: 100%;
+        padding-left: 50px !important;
+        padding-right: 0 !important;
+        text-align: left !important;
+    }
+
+    .timeline-item:nth-child(even) {
+        left: 0;
+    }
+
+    .timeline-item::before {
+        left: 10px !important;
+        right: auto !important;
+    }
+
+    .timeline-connector {
+        left: 30px !important;
+        right: auto !important;
+    }
+}
