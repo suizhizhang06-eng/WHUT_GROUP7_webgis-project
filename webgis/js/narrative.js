@@ -67,34 +67,31 @@ class NarrativeEditor {
         let html = '';
         this.chapters.forEach((chapter, index) => {
             const isActive = this.currentChapter?.id === chapter.id;
+            const isExpanded = this.expandedChapters?.has(chapter.id);
             const eventCount = chapter.events?.length || 0;
 
+            // 获取章节关联的事件详情
+            const chapterEvents = this.getChapterEvents(chapter);
+
             html += `
-                <div class="chapter-item ${isActive ? 'active' : ''}" data-id="${chapter.id}" draggable="true">
-                    <div class="chapter-header">
+                <div class="chapter-item ${isActive ? 'active' : ''}" data-id="${chapter.id}">
+                    <div class="chapter-header" data-action="toggle" data-id="${chapter.id}">
                         <span class="chapter-order">${chapter.order}</span>
                         <h4 class="chapter-title">${chapter.title}</h4>
-                        <div class="chapter-actions">
-                            <button class="btn-icon" title="编辑" data-action="edit" data-id="${chapter.id}">
-                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                                </svg>
-                            </button>
-                            <button class="btn-icon" title="删除" data-action="delete" data-id="${chapter.id}">
-                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="3 6 5 6 21 6"/>
-                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                                </svg>
-                            </button>
-                        </div>
+                        <svg class="expand-icon ${isExpanded ? 'expanded' : ''}" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
                     </div>
                     <p class="chapter-description">${chapter.description || '暂无描述'}</p>
-                    ${eventCount > 0 ? `
-                    <div class="chapter-events">
-                        <span class="chapter-event-tag">${eventCount} 个事件</span>
+                    <div class="chapter-events-list ${isExpanded ? 'expanded' : ''}">
+                        ${chapterEvents.map(event => `
+                            <div class="chapter-event-item" data-event-id="${event.id}">
+                                <span class="event-dot ${event.type}"></span>
+                                <span class="event-name">${event.name}</span>
+                                <span class="event-time">${event.time?.start || ''}</span>
+                            </div>
+                        `).join('')}
                     </div>
-                    ` : ''}
                 </div>
             `;
         });
@@ -105,23 +102,49 @@ class NarrativeEditor {
         this.bindChapterEvents();
     }
 
+    // 获取章节关联的事件详情
+    getChapterEvents(chapter) {
+        if (!chapter.events || chapter.events.length === 0) return [];
+
+        const events = [];
+        chapter.events.forEach(eventId => {
+            const event = window.narrativeDataModel?.getEvent(eventId);
+            if (event) {
+                events.push(event);
+            }
+        });
+
+        return events;
+    }
+
     bindChapterEvents() {
         const chapterList = document.getElementById('chapter-list');
         if (!chapterList) return;
 
-        // 章节点击
-        chapterList.querySelectorAll('.chapter-item').forEach(item => {
-            item.addEventListener('click', (e) => {
-                // 忽略按钮点击
-                if (e.target.closest('.btn-icon')) return;
+        // 初始化展开状态集合
+        if (!this.expandedChapters) {
+            this.expandedChapters = new Set();
+        }
 
-                const id = item.dataset.id;
-                this.selectChapter(id);
+        // 章节头部点击 - 展开/收起
+        chapterList.querySelectorAll('.chapter-header').forEach(header => {
+            header.addEventListener('click', (e) => {
+                const id = header.dataset.id;
+                this.toggleChapter(id);
+            });
+        });
+
+        // 事件点击 - 跳转到地图上的事件
+        chapterList.querySelectorAll('.chapter-event-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const eventId = item.dataset.eventId;
+                this.navigateToEvent(eventId);
             });
         });
 
         // 操作按钮
-        chapterList.querySelectorAll('[data-action]').forEach(btn => {
+        chapterList.querySelectorAll('[data-action="edit"], [data-action="delete"]').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const action = btn.dataset.action;
@@ -137,6 +160,45 @@ class NarrativeEditor {
 
         // 拖拽排序
         this.setupDragAndDrop();
+    }
+
+    // 展开/收起章节
+    toggleChapter(chapterId) {
+        if (!this.expandedChapters) {
+            this.expandedChapters = new Set();
+        }
+
+        if (this.expandedChapters.has(chapterId)) {
+            this.expandedChapters.delete(chapterId);
+        } else {
+            this.expandedChapters.add(chapterId);
+        }
+
+        // 更新UI
+        this.renderChapterList();
+    }
+
+    // 跳转到事件
+    navigateToEvent(eventId) {
+        const event = window.narrativeDataModel?.getEvent(eventId);
+        if (event && event.location) {
+            // 发送事件通知地图跳转
+            this.emit('event:navigate', {
+                eventId,
+                lat: event.location.lat,
+                lng: event.location.lng
+            });
+        }
+    }
+
+    // 选中章节
+    selectChapter(chapterId) {
+        const chapter = this.chapters.find(c => c.id === chapterId);
+        if (chapter) {
+            this.currentChapter = chapter;
+            this.renderChapterList();
+            this.emit('chapter:selected', chapter);
+        }
     }
 
     setupDragAndDrop() {

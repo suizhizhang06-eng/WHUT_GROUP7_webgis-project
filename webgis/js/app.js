@@ -95,6 +95,14 @@ class App {
         // 使用chapter-list作为容器
         this.narrativeEditor = new NarrativeEditor('chapter-list');
         window.narrativeEditor = this.narrativeEditor;
+
+        // 监听事件跳转
+        this.narrativeEditor.on('event:navigate', (data) => {
+            if (this.mapManager) {
+                this.mapManager.setView([data.lat, data.lng], 8);
+                this.mapManager.selectElement('marker', data.eventId);
+            }
+        });
     }
 
     initSpatialAnalysis() {
@@ -182,14 +190,6 @@ class App {
     }
 
     bindUIEvents() {
-        // 案例选择按钮
-        const btnLoadCase = document.getElementById('btn-load-case');
-        if (btnLoadCase) {
-            btnLoadCase.addEventListener('click', () => {
-                this.showCaseModal();
-            });
-        }
-
         // 导出按钮
         const btnExport = document.getElementById('btn-export');
         if (btnExport) {
@@ -197,16 +197,6 @@ class App {
                 this.exportData();
             });
         }
-
-        // 案例选择模态框
-        const caseCards = document.querySelectorAll('.case-card');
-        caseCards.forEach(card => {
-            card.addEventListener('click', () => {
-                const caseType = card.dataset.case;
-                this.loadCase(caseType);
-                this.hideCaseModal();
-            });
-        });
 
         // 模态框关闭按钮
         document.querySelectorAll('.modal-close').forEach(btn => {
@@ -221,6 +211,17 @@ class App {
                 overlay.closest('.modal').style.display = 'none';
             });
         });
+
+        // 右侧栏关闭按钮
+        const btnCloseDetail = document.getElementById('btn-close-detail');
+        if (btnCloseDetail) {
+            btnCloseDetail.addEventListener('click', () => {
+                const detailPanel = document.getElementById('detail-panel');
+                if (detailPanel) {
+                    detailPanel.style.display = 'none';
+                }
+            });
+        }
 
         // 工具栏按钮
         const toolBtns = document.querySelectorAll('.btn-tool');
@@ -303,6 +304,7 @@ class App {
         const sidebarLeft = document.getElementById('sidebar-left');
         const detailPanel = document.getElementById('detail-panel');
         const queryPanel = document.getElementById('query-panel');
+        const analysisPanel = document.getElementById('analysis-panel');
 
         // 根据视图显示对应面板
         switch (view) {
@@ -310,37 +312,27 @@ class App {
                 if (sidebarLeft) sidebarLeft.style.display = 'block';
                 if (detailPanel) detailPanel.style.display = 'block';
                 if (queryPanel) queryPanel.style.display = 'none';
+                if (analysisPanel) analysisPanel.style.display = 'none';
                 break;
             case 'timeline':
                 if (sidebarLeft) sidebarLeft.style.display = 'none';
                 if (detailPanel) detailPanel.style.display = 'none';
                 if (queryPanel) queryPanel.style.display = 'none';
+                if (analysisPanel) analysisPanel.style.display = 'none';
                 break;
             case 'narrative':
                 if (sidebarLeft) sidebarLeft.style.display = 'block';
                 if (detailPanel) detailPanel.style.display = 'none';
-                if (queryPanel) queryPanel.style.display = 'none';
+                if (queryPanel) queryPanel.style.display = 'block';
+                if (analysisPanel) analysisPanel.style.display = 'none';
                 this.narrativeEditor?.renderChapterList();
                 break;
             case 'analysis':
                 if (sidebarLeft) sidebarLeft.style.display = 'none';
                 if (detailPanel) detailPanel.style.display = 'none';
-                if (queryPanel) queryPanel.style.display = 'block';
+                if (queryPanel) queryPanel.style.display = 'none';
+                if (analysisPanel) analysisPanel.style.display = 'block';
                 break;
-        }
-    }
-
-    showCaseModal() {
-        const modal = document.getElementById('modal-case');
-        if (modal) {
-            modal.style.display = 'flex';
-        }
-    }
-
-    hideCaseModal() {
-        const modal = document.getElementById('modal-case');
-        if (modal) {
-            modal.style.display = 'none';
         }
     }
 
@@ -639,25 +631,198 @@ class App {
         }
 
         const results = this.spatialAnalysis.spatiotemporalAnalysis(events);
-        this.displayAnalysisResults('时空序列分析', results);
+        this.displaySpatiotemporalResults(events, results);
         this.showNotification('时空序列分析完成');
+    }
+
+    displaySpatiotemporalResults(events, results) {
+        const resultsContainer = document.getElementById('analysis-results');
+        if (!resultsContainer) return;
+
+        let html = '<div class="analysis-result"><h4>时空序列分析</h4>';
+
+        // 统计信息
+        if (results.statistics) {
+            html += `
+                <div class="stats">
+                    <p><strong>事件总数：</strong>${results.statistics.totalEvents}</p>
+                    <p><strong>时间跨度：</strong>${results.statistics.timeSpan}</p>
+                    <p><strong>地点数量：</strong>${results.statistics.locationCount}</p>
+                    <p><strong>平均距离：</strong>${results.statistics.averageDistance} km</p>
+                </div>
+            `;
+        }
+
+        // 事件列表
+        html += '<div class="event-list"><h4>事件序列</h4>';
+        events.forEach((event, index) => {
+            html += `
+                <div class="analysis-event-item" data-event-id="${event.id}">
+                    <span class="event-index">${index + 1}</span>
+                    <div class="event-info">
+                        <span class="event-name">${event.name}</span>
+                        <span class="event-meta">${event.time?.start || ''} | ${event.location?.name || ''}</span>
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div></div>';
+
+        resultsContainer.innerHTML = html;
+
+        // 绑定点击事件
+        resultsContainer.querySelectorAll('.analysis-event-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const eventId = item.dataset.eventId;
+                this.showEventAnalysisDetail(eventId);
+            });
+        });
+    }
+
+    showEventAnalysisDetail(eventId) {
+        const event = this.dataModel.getEvent(eventId);
+        if (!event) return;
+
+        const detailPanel = document.getElementById('detail-panel');
+        const detailTitle = document.getElementById('detail-title');
+        const detailContent = document.getElementById('detail-content');
+
+        if (!detailPanel || !detailContent) return;
+
+        // 切换到地图视图显示详情
+        this.switchView('map');
+        this.setActiveTab('map');
+
+        detailPanel.style.display = 'block';
+        detailTitle.textContent = event.name;
+
+        // 跳转到地图位置
+        if (event.location && this.mapManager) {
+            this.mapManager.setView([event.location.lat, event.location.lng], 8);
+            this.mapManager.selectElement('marker', eventId);
+        }
+
+        // 显示事件详情
+        const typeLabels = {
+            departure: '出发',
+            arrival: '到达',
+            battle: '战役',
+            diplomacy: '外交',
+            captivity: '扣押',
+            other: '其他'
+        };
+
+        let html = `
+            <div class="detail-section">
+                <h4>基本信息</h4>
+                <p><strong>时间：</strong>${event.time?.start || '未知'}${event.time?.end ? ' - ' + event.time.end : ''}</p>
+                <p><strong>地点：</strong>${event.location?.name || '未知'}</p>
+                <p><strong>类型：</strong>${typeLabels[event.type] || event.type}</p>
+            </div>
+        `;
+
+        if (event.description) {
+            html += `
+                <div class="detail-section">
+                    <h4>描述</h4>
+                    <p>${event.description}</p>
+                </div>
+            `;
+        }
+
+        if (event.roles && event.roles.length > 0) {
+            html += '<div class="detail-section"><h4>相关角色</h4><ul>';
+            event.roles.forEach(roleId => {
+                const role = this.dataModel.getRole(roleId);
+                if (role) {
+                    html += `<li>${role.name}（${role.type === 'person' ? '人物' : role.type === 'army' ? '军队' : '国家'}）</li>`;
+                }
+            });
+            html += '</ul></div>';
+        }
+
+        detailContent.innerHTML = html;
+    }
+
+    setActiveTab(view) {
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.classList.remove('active');
+            if (tab.dataset.view === view) {
+                tab.classList.add('active');
+            }
+        });
     }
 
     runInfluenceAnalysis() {
         const locations = this.dataModel.getAllLocations();
+        let cities = [];
+
         if (locations.length === 0) {
             // 使用事件位置
             const events = this.dataModel.getAllEvents();
-            const cities = events.map(e => ({
-                name: e.location?.name || '未知',
-                coordinates: { lat: e.location?.lat, lng: e.location?.lng },
-                type: 'city'
-            }));
-            this.spatialAnalysis.influenceAnalysis(cities);
+            const uniqueLocations = new Map();
+            events.forEach(e => {
+                if (e.location && !uniqueLocations.has(e.location.name)) {
+                    uniqueLocations.set(e.location.name, {
+                        name: e.location.name,
+                        coordinates: { lat: e.location.lat, lng: e.location.lng },
+                        type: 'city'
+                    });
+                }
+            });
+            cities = Array.from(uniqueLocations.values());
         } else {
-            this.spatialAnalysis.influenceAnalysis(locations);
+            cities = locations.map(l => ({
+                name: l.name,
+                coordinates: l.coordinates,
+                type: l.type
+            }));
         }
-        this.showNotification('影响范围分析完成');
+
+        if (cities.length > 0) {
+            this.spatialAnalysis.influenceAnalysis(cities);
+            this.displayInfluenceResults(cities);
+            this.showNotification('影响范围分析完成，结果已显示在右侧面板');
+        } else {
+            this.showNotification('没有找到分析数据');
+        }
+    }
+
+    displayInfluenceResults(cities) {
+        const resultsContainer = document.getElementById('analysis-results');
+        if (!resultsContainer) return;
+
+        let html = '<div class="analysis-result"><h4>影响范围分析</h4>';
+
+        html += '<div class="event-list"><h4>城市影响范围</h4>';
+        cities.forEach((c, index) => {
+            const radius = c.type === 'capital' ? 400 : 200;
+            html += `
+                <div class="analysis-event-item" data-lat="${c.coordinates.lat}" data-lng="${c.coordinates.lng}">
+                    <span class="event-index">${index + 1}</span>
+                    <div class="event-info">
+                        <span class="event-name">${c.name}</span>
+                        <span class="event-meta">${c.type === 'capital' ? '都城' : '城市'} | 影响半径: ${radius}km</span>
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div></div>';
+
+        resultsContainer.innerHTML = html;
+
+        // 绑定点击事件
+        resultsContainer.querySelectorAll('.analysis-event-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const lat = parseFloat(item.dataset.lat);
+                const lng = parseFloat(item.dataset.lng);
+                if (this.mapManager) {
+                    this.switchView('map');
+                    this.setActiveTab('map');
+                    this.mapManager.setView([lat, lng], 8);
+                }
+            });
+        });
     }
 
     runOverlayAnalysis() {
@@ -682,13 +847,65 @@ class App {
         });
 
         if (factions.length > 0) {
-            this.spatialAnalysis.overlayAnalysis(factions);
-            this.showNotification('叠加分析完成');
+            const results = this.spatialAnalysis.overlayAnalysis(factions);
+            this.displayOverlayResults(factions, results);
+            this.showNotification('叠加分析完成，结果已显示在右侧面板');
+        } else {
+            this.showNotification('没有找到势力数据');
         }
     }
 
+    displayOverlayResults(factions, analysisResults) {
+        const resultsContainer = document.getElementById('analysis-results');
+        if (!resultsContainer) return;
+
+        let html = '<div class="analysis-result"><h4>叠加分析结果</h4>';
+
+        // 显示势力范围
+        html += '<div class="event-list"><h4>分析势力</h4>';
+        factions.forEach((f, index) => {
+            html += `
+                <div class="analysis-event-item" data-lat="${f.center.lat}" data-lng="${f.center.lng}">
+                    <span class="event-index" style="background:${f.color}">${index + 1}</span>
+                    <div class="event-info">
+                        <span class="event-name" style="color:${f.color}">${f.name}</span>
+                        <span class="event-meta">影响半径: ${f.radius}km</span>
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+
+        // 显示重叠分析
+        if (analysisResults && analysisResults.overlaps && analysisResults.overlaps.length > 0) {
+            html += '<div class="stats"><h4>势力重叠区域</h4>';
+            analysisResults.overlaps.forEach(o => {
+                html += `<p>• ${o.faction1} 与 ${o.faction2} 距离: ${o.distance}</p>`;
+            });
+            html += '</div>';
+        } else {
+            html += '<div class="stats"><p>各势力范围无明显重叠</p></div>';
+        }
+
+        html += '</div>';
+        resultsContainer.innerHTML = html;
+
+        // 绑定点击事件
+        resultsContainer.querySelectorAll('.analysis-event-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const lat = parseFloat(item.dataset.lat);
+                const lng = parseFloat(item.dataset.lng);
+                if (this.mapManager) {
+                    this.switchView('map');
+                    this.setActiveTab('map');
+                    this.mapManager.setView([lat, lng], 6);
+                }
+            });
+        });
+    }
+
     displayAnalysisResults(title, results) {
-        const resultsContainer = document.getElementById('query-results');
+        const resultsContainer = document.getElementById('analysis-results');
         if (!resultsContainer) return;
 
         let html = `<div class="analysis-result"><h4>${title}</h4>`;

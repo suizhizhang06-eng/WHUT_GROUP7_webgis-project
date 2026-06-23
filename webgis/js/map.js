@@ -63,23 +63,23 @@ class MapManager {
     }
 
     addBaseLayer() {
-        // OpenStreetMap底图
+        // OpenStreetMap底图（最稳定）
         const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             maxZoom: 19
         });
 
+        // 简化地图 - 使用高德简洁底图
+        const lightLayer = L.tileLayer('https://wprd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}', {
+            subdomains: '1234',
+            attribution: '&copy; 高德地图',
+            maxZoom: 18
+        });
+
         // 添加多个底图选择
         this.baseLayers = {
             '标准地图': osmLayer,
-            '地形图': L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenTopoMap',
-                maxZoom: 17
-            }),
-            '简化地图': L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; CartoDB',
-                maxZoom: 19
-            })
+            '简化地图': lightLayer
         };
 
         // 默认使用标准地图
@@ -211,30 +211,52 @@ class MapManager {
         // 转换坐标点
         const latlngs = points.map(p => [p.lat, p.lng]);
 
+        // 使用平滑曲线插值
+        const smoothLatLngs = this.smoothPath(latlngs);
+
         // 创建路径样式
         const style = svgSymbolSystem.createPathStyle(type || 'silkRoad', {
             color,
             weight
         });
 
-        let path;
-        if (animation) {
-            path = svgSymbolSystem.createAnimatedPath(latlngs, type || 'silkRoad', {
-                color,
-                weight,
-                duration: options.duration || 5
-            });
-        } else {
-            path = L.polyline(latlngs, style);
-        }
+        // 创建路径（使用平滑曲线）
+        const path = L.polyline(smoothLatLngs, {
+            ...style,
+            smoothFactor: 1.5,
+            className: 'route-path'
+        });
 
         // 添加到图层
         path.addTo(this.layers.routes);
 
+        // 添加节点标记
+        const nodeMarkers = [];
+        points.forEach((point, index) => {
+            if (index > 0 && index < points.length - 1) {
+                // 中间节点用小圆点标记
+                const marker = L.circleMarker([point.lat, point.lng], {
+                    radius: 4,
+                    color: color || '#c9a227',
+                    fillColor: '#fff',
+                    fillOpacity: 1,
+                    weight: 2
+                }).addTo(this.layers.routes);
+
+                marker.bindTooltip(point.name, {
+                    permanent: false,
+                    direction: 'top'
+                });
+
+                nodeMarkers.push(marker);
+            }
+        });
+
         // 存储引用
         this.paths.set(id, {
             path,
-            data: routeData
+            data: routeData,
+            nodeMarkers
         });
 
         // 绑定点击事件
@@ -245,20 +267,70 @@ class MapManager {
 
         // 绑定悬停事件
         path.on('mouseover', function () {
-            this.setStyle({ weight: (weight || 3) + 2 });
+            this.setStyle({ weight: (weight || 4) + 2 });
         });
 
         path.on('mouseout', function () {
-            this.setStyle({ weight: weight || 3 });
+            this.setStyle({ weight: weight || 4 });
         });
 
         return path;
+    }
+
+    // 路径平滑算法
+    smoothPath(latlngs) {
+        if (latlngs.length < 3) return latlngs;
+
+        const smoothed = [];
+        const tension = 0.3;
+
+        for (let i = 0; i < latlngs.length - 1; i++) {
+            const p0 = latlngs[Math.max(0, i - 1)];
+            const p1 = latlngs[i];
+            const p2 = latlngs[i + 1];
+            const p3 = latlngs[Math.min(latlngs.length - 1, i + 2)];
+
+            // Catmull-Rom 样条插值
+            const segments = 10;
+            for (let t = 0; t < segments; t++) {
+                const tt = t / segments;
+                const tt2 = tt * tt;
+                const tt3 = tt2 * tt;
+
+                const lat = 0.5 * (
+                    (2 * p1[0]) +
+                    (-p0[0] + p2[0]) * tt +
+                    (2 * p0[0] - 5 * p1[0] + 4 * p2[0] - p3[0]) * tt2 +
+                    (-p0[0] + 3 * p1[0] - 3 * p2[0] + p3[0]) * tt3
+                );
+
+                const lng = 0.5 * (
+                    (2 * p1[1]) +
+                    (-p0[1] + p2[1]) * tt +
+                    (2 * p0[1] - 5 * p1[1] + 4 * p2[1] - p3[1]) * tt2 +
+                    (-p0[1] + 3 * p1[1] - 3 * p2[1] + p3[1]) * tt3
+                );
+
+                smoothed.push([lat, lng]);
+            }
+        }
+
+        // 添加最后一个点
+        smoothed.push(latlngs[latlngs.length - 1]);
+
+        return smoothed;
     }
 
     removePath(id) {
         const pathData = this.paths.get(id);
         if (pathData) {
             this.layers.routes.removeLayer(pathData.path);
+            // 移除节点标记
+            if (pathData.nodeMarkers) {
+                pathData.nodeMarkers.forEach(marker => {
+                    this.layers.routes.removeLayer(marker);
+                });
+            }
             this.paths.delete(id);
         }
     }

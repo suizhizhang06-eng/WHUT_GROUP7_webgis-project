@@ -158,17 +158,10 @@
 .custom-marker.captivity { background: #9b59b6; }
 .custom-marker.arrival { background: var(--warning-color); }
 
-/* 路径动画样式 */
-.animated-path {
-    stroke-dasharray: 1000;
-    stroke-dashoffset: 1000;
-    animation: dash 30s linear forwards;
-}
-
-@keyframes dash {
-    to {
-        stroke-dashoffset: 0;
-    }
+/* 路径样式 */
+.route-path {
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 /* 地图弹出窗口样式 */

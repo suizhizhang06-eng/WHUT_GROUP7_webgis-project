@@ -227,8 +227,8 @@ class SVGSymbolSystem {
 
         return {
             color: options.color || symbol.color,
-            weight: options.weight || 3,
-            opacity: options.opacity || 0.8,
+            weight: options.weight || 4,
+            opacity: options.opacity || 0.9,
             dashArray: options.dashArray || symbol.dashArray || null,
             lineCap: 'round',
             lineJoin: 'round'
@@ -236,25 +236,17 @@ class SVGSymbolSystem {
     }
 
     /**
-     * 创建动画路径
+     * 创建动画路径 - 使用简单的实线，避免缩放时断裂
      */
     createAnimatedPath(latlngs, type, options = {}) {
         const style = this.createPathStyle(type, options);
 
+        // 移除dashArray，使用实线避免缩放时断裂
+        delete style.dashArray;
+
         const path = L.polyline(latlngs, {
             ...style,
-            className: 'animated-path'
-        });
-
-        // 添加动画控制
-        path.on('add', function () {
-            const pathElement = this.getElement();
-            if (pathElement) {
-                const length = pathElement.getTotalLength();
-                pathElement.style.strokeDasharray = length;
-                pathElement.style.strokeDashoffset = length;
-                pathElement.style.animation = `dash ${options.duration || 3}s linear forwards`;
-            }
+            className: 'route-path'
         });
 
         return path;

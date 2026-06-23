@@ -36,8 +36,7 @@
             <button class="nav-tab" data-view="analysis">空间分析</button>
         </nav>
         <div class="header-actions">
-            <button id="btn-load-case" class="btn btn-primary">加载案例</button>
-            <button id="btn-export" class="btn btn-secondary">导出</button>
+            <button id="btn-export" class="btn btn-secondary">导出数据</button>
         </div>
     </header>
 
@@ -140,7 +139,7 @@
                 </div>
             </div>
 
-            <div class="panel" id="query-panel">
+            <div class="panel" id="query-panel" style="display:none;">
                 <div class="panel-header">
                     <h3>叙事查询</h3>
                 </div>
@@ -151,7 +150,6 @@
                             <select id="query-type" class="form-control">
                                 <option value="event">按事件查询</option>
                                 <option value="role">按角色查询</option>
-                                <option value="time">按时间查询</option>
                                 <option value="location">按地点查询</option>
                             </select>
                         </div>
@@ -161,76 +159,29 @@
                         </div>
                         <button id="btn-query" class="btn btn-primary btn-block">查询</button>
                     </div>
-
-                    <div class="analysis-section">
-                        <h4>空间分析</h4>
-                        <button id="btn-spatiotemporal" class="btn btn-primary btn-block">时空序列分析</button>
-                        <button id="btn-influence" class="btn btn-primary btn-block">影响范围分析</button>
-                        <button id="btn-overlay" class="btn btn-primary btn-block">叠加分析</button>
-                    </div>
-
                     <div id="query-results" class="query-results">
                         <!-- 查询结果将在这里显示 -->
                     </div>
                 </div>
             </div>
-        </aside>
-    </main>
 
-    <!-- 模态框 - 案例选择 -->
-    <div class="modal" id="modal-case" style="display:none;">
-        <div class="modal-overlay"></div>
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>选择叙事案例</h3>
-                <button class="btn-icon modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="case-list">
-                    <div class="case-card" data-case="zhangqian">
-                        <div class="case-icon">
-                            <svg viewBox="0 0 64 64" width="64" height="64">
-                                <circle cx="32" cy="32" r="28" fill="none" stroke="#c9a227" stroke-width="2"/>
-                                <path d="M20 32 Q32 20 44 32 Q32 44 20 32" fill="none" stroke="#c9a227" stroke-width="2"/>
-                                <circle cx="20" cy="32" r="4" fill="#c9a227"/>
-                                <circle cx="44" cy="32" r="4" fill="#c9a227"/>
-                                <path d="M20 32 L44 32" stroke="#c9a227" stroke-width="1.5" stroke-dasharray="4"/>
-                            </svg>
-                        </div>
-                        <h4>张骞出使西域</h4>
-                        <p>丝绸之路的开拓者，横跨欧亚的外交壮举</p>
-                        <span class="case-time">前138年 - 前60年</span>
+            <div class="panel" id="analysis-panel" style="display:none;">
+                <div class="panel-header">
+                    <h3>空间分析</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="analysis-section">
+                        <button id="btn-spatiotemporal" class="btn btn-primary btn-block">时空序列分析</button>
+                        <button id="btn-influence" class="btn btn-primary btn-block">影响范围分析</button>
+                        <button id="btn-overlay" class="btn btn-primary btn-block">叠加分析</button>
                     </div>
-                    <div class="case-card" data-case="battle">
-                        <div class="case-icon">
-                            <svg viewBox="0 0 64 64" width="64" height="64">
-                                <circle cx="32" cy="32" r="28" fill="none" stroke="#e74c3c" stroke-width="2"/>
-                                <path d="M24 24 L40 40 M40 24 L24 40" stroke="#e74c3c" stroke-width="3"/>
-                                <circle cx="32" cy="32" r="8" fill="none" stroke="#e74c3c" stroke-width="2"/>
-                            </svg>
-                        </div>
-                        <h4>街亭之战</h4>
-                        <p>三国时期关键战役，诸葛亮北伐的转折点</p>
-                        <span class="case-time">228年</span>
-                    </div>
-                    <div class="case-card" data-case="poets">
-                        <div class="case-icon">
-                            <svg viewBox="0 0 64 64" width="64" height="64">
-                                <circle cx="32" cy="32" r="28" fill="none" stroke="#3498db" stroke-width="2"/>
-                                <path d="M20 44 Q32 20 44 44" fill="none" stroke="#3498db" stroke-width="2"/>
-                                <circle cx="20" cy="44" r="4" fill="#3498db"/>
-                                <circle cx="32" cy="20" r="4" fill="#3498db"/>
-                                <circle cx="44" cy="44" r="4" fill="#3498db"/>
-                            </svg>
-                        </div>
-                        <h4>诗人轨迹</h4>
-                        <p>李白、白居易的人生旅程与创作地图</p>
-                        <span class="case-time">唐代</span>
+                    <div id="analysis-results" class="query-results">
+                        <!-- 分析结果将在这里显示 -->
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </aside>
+    </main>
 
     <!-- 模态框 - 事件编辑 -->
     <div class="modal" id="modal-event" style="display:none;">
